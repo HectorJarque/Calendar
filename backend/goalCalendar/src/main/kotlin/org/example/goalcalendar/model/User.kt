@@ -6,15 +6,15 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
-data class User(
+class User {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String = "",
+    var id: String = ""
 
     @Column(unique = true, nullable = false)
-    @Email val email: String = "",
+    @Email var email: String = ""
 
     @Column(nullable = false)
-    val password: String = "",
+    var password: String = ""
 
-    val createdAt: LocalDateTime = LocalDateTime.now()
-)
+    var createdAt: LocalDateTime = LocalDateTime.now()
+}

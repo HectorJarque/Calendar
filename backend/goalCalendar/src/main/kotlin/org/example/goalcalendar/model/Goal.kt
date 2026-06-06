@@ -5,17 +5,17 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "goals")
-data class Goal(
+class Goal {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String = "",
+    var id: String = ""
 
     @Column(nullable = false)
-    val userId: String = "",
+    var userId: String = ""
 
-    val label: String = "",
-    val targetValue: Int = 0,
-    val currentValue: Int = 0,
-    val date: LocalDate = LocalDate.now(),
-    val completed: Boolean = false,
-    val carriedOver: Boolean = false
-)
+    var label: String = ""
+    var targetValue: Int = 0
+    var currentValue: Int = 0
+    var date: LocalDate = LocalDate.now()
+    var completed: Boolean = false
+    var carriedOver: Boolean = false
+}
