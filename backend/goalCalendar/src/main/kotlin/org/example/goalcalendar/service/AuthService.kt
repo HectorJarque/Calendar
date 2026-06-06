@@ -17,10 +17,12 @@ class AuthService(
         if (userRepo.findByEmail(email) != null)
             throw ResponseStatusException(HttpStatus.CONFLICT, "Email ya registrado")
 
-        val user = userRepo.save(
-            User(email = email, password = passwordEncoder.encode(rawPassword))
-        )
-        return jwtService.generateToken(user.id)
+        val user = User()
+        user.email = email
+        user.password = passwordEncoder.encode(rawPassword)
+
+        val saved = userRepo.save(user)
+        return jwtService.generateToken(saved.id)
     }
 
     fun login(email: String, rawPassword: String): String {
