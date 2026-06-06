@@ -1,0 +1,49 @@
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.DS_Store
+Thumbs.db
+
+# Backend
+backend/goalCalendar/.gradle/
+backend/goalCalendar/build/
+backend/goalCalendar/gradle/wrapper/gradle-wrapper.jar
+!backend/goalCalendar/gradle/wrapper/gradle-wrapper.properties
+
+# JARs
+backend/goalCalendar/*.jar
+backend/goalCalendar/*.war
+
+# Logs
+*.log
+logs/
+
+# Env
+backend/goalCalendar/.env
+backend/goalCalendar/application-local.properties
+
+# Frontend - Angular / Node
+frontend/goal-calendar-app/node_modules/
+frontend/goal-calendar-app/dist/
+frontend/goal-calendar-app/.angular/
+
+# Cache de Angular CLI
+frontend/goal-calendar-app/.angular/cache/
+
+# Ficheros de entorno
+frontend/goal-calendar-app/src/environments/environment.local.ts
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
