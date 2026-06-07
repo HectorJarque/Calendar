@@ -9,7 +9,8 @@ interface CalendarDay {
   dateStr: string;
   isToday: boolean;
   isCurrentMonth: boolean;
-  goals: Goal[];
+  goalCount: number;
+  hasCompleted: boolean;
 }
 
 @Component({
@@ -19,14 +20,14 @@ interface CalendarDay {
   styles: [`
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .layout {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 1.5rem 1rem;
-      background: #faf9f7;
+    .page {
       min-height: 100vh;
+      background: #fff0f6;
+      padding: 1.5rem 1rem;
       font-family: 'Segoe UI', sans-serif;
     }
 
@@ -34,76 +35,73 @@ interface CalendarDay {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
 
-    .app-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #3d3a56;
-      letter-spacing: -0.3px;
+    .title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #9d174d;
+      letter-spacing: -0.5px;
     }
 
     .btn-logout {
       background: white;
-      border: 1.5px solid #e8e4f0;
-      color: #7c7a8a;
+      border: 1.5px solid #fbcfe8;
+      color: #be185d;
       padding: 0.4rem 1rem;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.15s;
+      font-size: 0.82rem;
+      font-weight: 600;
     }
 
     .btn-logout:hover {
-      background: #f5f0ff;
-      border-color: #c4b5fd;
-      color: #5b4ba0;
+      background: #fce7f3;
     }
 
     .nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
     }
 
     .btn-nav {
       background: white;
-      border: 1.5px solid #e8e4f0;
-      color: #5b4ba0;
+      border: 1.5px solid #fbcfe8;
+      color: #be185d;
       padding: 0.4rem 1.1rem;
       border-radius: 20px;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.15s;
+      font-weight: 700;
     }
 
     .btn-nav:hover {
-      background: #f0ebff;
+      background: #fdf2f8;
     }
 
-    .month-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #3d3a56;
+    .month-label {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #9d174d;
     }
 
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       text-align: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 6px;
     }
 
     .weekdays span {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      color: #a09db5;
+      color: #f9a8d4;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 0.25rem 0;
+      padding: 4px 0;
     }
 
     .grid {
@@ -113,362 +111,333 @@ interface CalendarDay {
     }
 
     .day {
-      min-height: 88px;
-      border-radius: 12px;
-      padding: 7px 6px 6px;
-      cursor: pointer;
-      transition: all 0.15s;
+      min-height: 72px;
       background: white;
-      border: 1.5px solid #eeebf5;
+      border: 1.5px solid #fce7f3;
+      border-radius: 12px;
+      padding: 7px 6px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     .day:hover {
-      border-color: #c4b5fd;
-      background: #faf7ff;
-      transform: translateY(-1px);
+      border-color: #f472b6;
+      background: #fdf2f8;
     }
 
     .day.other-month {
       background: transparent;
       border-color: transparent;
-      opacity: 0.4;
+      opacity: 0.35;
+      cursor: default;
     }
 
     .day.other-month:hover {
-      transform: none;
+      background: transparent;
+      border-color: transparent;
     }
 
     .day.today {
-      border-color: #a78bfa;
-      background: #faf7ff;
-    }
-
-    .day.selected {
-      border-color: #7c3aed;
-      background: #f5f0ff;
+      border-color: #ec4899;
+      border-width: 2px;
+      background: #fdf2f8;
     }
 
     .day-num {
       font-size: 0.78rem;
       font-weight: 700;
-      color: #5c5878;
+      color: #831843;
       margin-bottom: 5px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
-    .today .day-num {
-      color: #7c3aed;
-    }
-
-    .today-dot {
-      width: 5px;
-      height: 5px;
-      background: #7c3aed;
+    .today-ring {
+      width: 18px;
+      height: 18px;
+      background: #ec4899;
+      color: white;
       border-radius: 50%;
-      display: inline-block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 800;
     }
 
-    .pill {
-      font-size: 0.62rem;
-      font-weight: 600;
-      border-radius: 5px;
-      padding: 2px 5px;
-      margin-bottom: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .dots {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
     }
 
-    .pill.pending {
-      background: #ede9fe;
-      color: #5b4ba0;
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f9a8d4;
     }
 
-    .pill.done {
-      background: #d1fae5;
-      color: #065f46;
+    .dot.done {
+      background: #6ee7b7;
     }
 
-    .pill.carried {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .bar {
-      height: 3px;
-      background: #ede9fe;
-      border-radius: 2px;
-      margin-bottom: 3px;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      background: #a78bfa;
-      border-radius: 2px;
-      transition: width 0.3s;
-    }
-
-    .bar-fill.done {
-      background: #34d399;
-    }
-
-    /* MODAL — sin position:fixed, todo en flujo normal */
-    .modal-backdrop {
-      position: absolute;
+    /* OVERLAY FIXED */
+    .overlay {
+      position: fixed;
       inset: 0;
-      background: rgba(60, 50, 80, 0.35);
-      z-index: 200;
-      pointer-events: all;
-    }
-
-    .modal-wrap {
-      position: absolute;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 92%;
-      max-width: 420px;
-      z-index: 201;
-      pointer-events: all;
+      background: rgba(157, 23, 77, 0.18);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
 
     .modal {
       background: white;
       border-radius: 20px;
-      border: 1.5px solid #e8e4f0;
+      border: 2px solid #fbcfe8;
+      width: 100%;
+      max-width: 420px;
+      max-height: 85vh;
+      overflow-y: auto;
       padding: 1.5rem;
     }
 
-    .modal-header {
+    .modal-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.25rem;
     }
 
-    .modal-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #3d3a56;
+    .modal-date {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #9d174d;
     }
 
-    .btn-close-x {
-      background: #f5f0ff;
+    .btn-x {
+      width: 28px;
+      height: 28px;
+      background: #fce7f3;
       border: none;
-      color: #7c3aed;
-      width: 30px;
-      height: 30px;
       border-radius: 50%;
+      color: #be185d;
+      font-size: 0.9rem;
       cursor: pointer;
-      font-size: 1.1rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s;
+      font-weight: 700;
+      flex-shrink: 0;
     }
 
-    .btn-close-x:hover {
-      background: #ede9fe;
+    .btn-x:hover {
+      background: #fbcfe8;
     }
 
-    .goals-list {
-      margin-bottom: 1.25rem;
-    }
-
-    .goal-item {
-      background: #faf9fc;
-      border: 1.5px solid #eeebf5;
+    .goal-card {
+      background: #fff5f9;
+      border: 1.5px solid #fce7f3;
       border-radius: 12px;
       padding: 10px 12px;
       margin-bottom: 8px;
     }
 
-    .goal-top {
+    .gc-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .goal-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #3d3a56;
-    }
-
-    .badge-carried {
-      font-size: 0.65rem;
-      background: #fef3c7;
-      color: #92400e;
-      padding: 1px 6px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    .badge-done {
-      font-size: 0.65rem;
-      background: #d1fae5;
-      color: #065f46;
-      padding: 1px 6px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    .goal-controls {
-      display: flex;
-      align-items: center;
+      margin-bottom: 8px;
       gap: 8px;
     }
 
-    .goal-controls input {
-      width: 72px;
+    .gc-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #831843;
+      flex: 1;
+    }
+
+    .badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .badge-done {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge-carried {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .gc-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 7px;
+    }
+
+    .gc-input {
+      width: 68px;
       padding: 5px 8px;
-      border: 1.5px solid #e0dbf0;
+      border: 1.5px solid #fbcfe8;
       border-radius: 8px;
       font-size: 0.85rem;
-      color: #3d3a56;
-      outline: none;
+      color: #831843;
       text-align: center;
+      outline: none;
     }
 
-    .goal-controls input:focus {
-      border-color: #a78bfa;
+    .gc-input:focus {
+      border-color: #ec4899;
     }
 
-    .goal-max {
+    .gc-max {
       font-size: 0.8rem;
-      color: #a09db5;
+      color: #f9a8d4;
+      font-weight: 600;
     }
 
     .btn-save {
-      background: #7c3aed;
+      background: #ec4899;
       color: white;
       border: none;
       padding: 5px 12px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 600;
-      transition: background 0.15s;
+      font-size: 0.78rem;
+      font-weight: 700;
     }
 
     .btn-save:hover {
-      background: #6d28d9;
+      background: #db2777;
     }
 
     .btn-del {
-      background: #fff0f0;
-      color: #dc2626;
-      border: 1.5px solid #fecaca;
+      background: white;
+      color: #e11d48;
+      border: 1.5px solid #fecdd3;
       padding: 5px 10px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 600;
-      transition: all 0.15s;
+      font-size: 0.78rem;
+      font-weight: 700;
     }
 
     .btn-del:hover {
-      background: #fee2e2;
+      background: #fff1f2;
     }
 
-    .goal-bar {
-      height: 4px;
-      background: #ede9fe;
-      border-radius: 2px;
-      margin-top: 6px;
+    .gc-bar {
+      height: 5px;
+      background: #fce7f3;
+      border-radius: 3px;
       overflow: hidden;
     }
 
-    .goal-bar-fill {
+    .gc-fill {
       height: 100%;
-      background: #a78bfa;
-      border-radius: 2px;
+      background: #f472b6;
+      border-radius: 3px;
       transition: width 0.3s;
     }
 
-    .goal-bar-fill.done {
+    .gc-fill.done {
       background: #34d399;
     }
 
-    .empty-msg {
+    .empty {
       text-align: center;
-      color: #b0adc0;
+      color: #f9a8d4;
       font-size: 0.85rem;
-      padding: 1rem 0;
+      padding: 0.75rem 0;
+      font-weight: 600;
     }
 
-    .divider {
+    .sep {
       border: none;
-      border-top: 1.5px solid #f0ebff;
-      margin: 0 0 1.25rem;
+      border-top: 1.5px solid #fce7f3;
+      margin: 1rem 0;
     }
 
-    .add-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #5b4ba0;
-      margin-bottom: 0.75rem;
+    .add-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #be185d;
+      margin-bottom: 0.6rem;
     }
 
-    .add-form {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .add-form input {
+    .field {
+      width: 100%;
       padding: 0.55rem 0.85rem;
-      border: 1.5px solid #e0dbf0;
+      border: 1.5px solid #fbcfe8;
       border-radius: 10px;
       font-size: 0.9rem;
-      color: #3d3a56;
+      color: #831843;
+      background: white;
       outline: none;
+      margin-bottom: 8px;
+      display: block;
     }
 
-    .add-form input:focus {
-      border-color: #a78bfa;
+    .field:focus {
+      border-color: #ec4899;
+    }
+
+    .field::placeholder {
+      color: #f9a8d4;
     }
 
     .btn-add {
-      background: #7c3aed;
+      width: 100%;
+      background: #ec4899;
       color: white;
       border: none;
       padding: 0.6rem;
       border-radius: 10px;
       cursor: pointer;
       font-size: 0.9rem;
-      font-weight: 600;
-      transition: background 0.15s;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
 
     .btn-add:hover {
-      background: #6d28d9;
+      background: #db2777;
     }
 
-    .btn-cancel {
+    .btn-close {
+      width: 100%;
       background: white;
-      color: #7c7a8a;
-      border: 1.5px solid #e0dbf0;
+      color: #be185d;
+      border: 1.5px solid #fbcfe8;
       padding: 0.5rem;
       border-radius: 10px;
       cursor: pointer;
       font-size: 0.85rem;
-      margin-top: 2px;
+      font-weight: 600;
     }
 
-    .btn-cancel:hover {
-      background: #f9f7ff;
+    .btn-close:hover {
+      background: #fdf2f8;
     }
   `],
   template: `
-    <div class="layout" style="position:relative">
-
+    <div class="page">
       <header>
-        <span class="app-title">📅 Goal Calendar</span>
+        <span class="title">🌸 Goal Calendar</span>
         <button class="btn-logout" (click)="authService.logout()">Cerrar
           sesión
         </button>
@@ -476,7 +445,7 @@ interface CalendarDay {
 
       <div class="nav">
         <button class="btn-nav" (click)="prevMonth()">← Anterior</button>
-        <span class="month-title">{{ monthName }} {{ year }}</span>
+        <span class="month-label">{{ monthName }} {{ year }}</span>
         <button class="btn-nav" (click)="nextMonth()">Siguiente →</button>
       </div>
 
@@ -490,90 +459,80 @@ interface CalendarDay {
              class="day"
              [class.other-month]="!day.isCurrentMonth"
              [class.today]="day.isToday"
-             [class.selected]="selectedDay?.dateStr === day.dateStr"
-             (click)="selectDay(day)">
+             (click)="day.isCurrentMonth && selectDay(day)">
           <div class="day-num">
-            {{ day.date.getDate() }}
-            <span class="today-dot" *ngIf="day.isToday"></span>
+            <span class="today-ring"
+                  *ngIf="day.isToday">{{ day.date.getDate() }}</span>
+            <span *ngIf="!day.isToday">{{ day.date.getDate() }}</span>
           </div>
-          <ng-container *ngFor="let g of day.goals">
-            <div class="pill"
-                 [class.done]="g.completed"
-                 [class.carried]="g.carriedOver && !g.completed"
-                 [class.pending]="!g.completed && !g.carriedOver">
-              {{ g.label }}: {{ g.currentValue }}/{{ g.targetValue }}
+          <div class="dots" *ngIf="day.goalCount > 0">
+            <span *ngFor="let g of arr(day.goalCount); let i = index"
+                  class="dot" [class.done]="day.hasCompleted && i === 0"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" *ngIf="selectedDay" (click)="closeIfBackdrop($event)">
+      <div class="modal" (click)="$event.stopPropagation()">
+
+        <div class="modal-head">
+          <span class="modal-date">{{ formatDate(selectedDay.date) }}</span>
+          <button class="btn-x" (click)="selectedDay = null">✕</button>
+        </div>
+
+        <ng-container *ngIf="!loadingModal; else loading">
+
+          <div *ngFor="let g of modalGoals" class="goal-card">
+            <div class="gc-top">
+              <span class="gc-name">{{ g.label }}</span>
+              <span class="badge badge-carried"
+                    *ngIf="g.carriedOver && !g.completed">↑ arrastrado</span>
+              <span class="badge badge-done" *ngIf="g.completed">✓ listo</span>
             </div>
-            <div class="bar">
-              <div class="bar-fill"
+            <div class="gc-row">
+              <input class="gc-input"
+                     type="number"
+                     [(ngModel)]="g.currentValue"
+                     min="0"
+                     [max]="g.targetValue"/>
+              <span class="gc-max">/ {{ g.targetValue }}</span>
+              <button class="btn-save" (click)="saveGoal(g)">Guardar</button>
+              <button class="btn-del" (click)="deleteGoal(g)">Eliminar</button>
+            </div>
+            <div class="gc-bar">
+              <div class="gc-fill"
                    [class.done]="g.completed"
                    [style.width.%]="pct(g)"></div>
             </div>
-          </ng-container>
-        </div>
+          </div>
+
+          <p class="empty" *ngIf="modalGoals.length === 0">Sin metas para este
+            día</p>
+
+          <hr class="sep"/>
+          <div class="add-label">+ Añadir nueva meta</div>
+          <input class="field"
+                 type="text"
+                 [(ngModel)]="newLabel"
+                 placeholder="Nombre (ej: Pasos, Agua...)"
+                 maxlength="50"/>
+          <input class="field"
+                 type="number"
+                 [(ngModel)]="newTarget"
+                 placeholder="Objetivo (ej: 10000)"
+                 min="1"/>
+          <button class="btn-add" (click)="addGoal()">Añadir meta</button>
+          <button class="btn-close" (click)="selectedDay = null">Cerrar</button>
+
+        </ng-container>
+
+        <ng-template #loading>
+          <p class="empty">Cargando...</p>
+        </ng-template>
+
       </div>
-
-      <!-- Backdrop -->
-      <div class="modal-backdrop"
-           *ngIf="selectedDay"
-           (click)="selectedDay = null"></div>
-
-      <!-- Modal -->
-      <div class="modal-wrap" *ngIf="selectedDay">
-        <div class="modal" (click)="$event.stopPropagation()">
-
-          <div class="modal-header">
-            <span class="modal-title">{{ formatDate(selectedDay.date) }}</span>
-            <button class="btn-close-x" (click)="selectedDay = null">✕</button>
-          </div>
-
-          <div class="goals-list">
-            <div *ngFor="let g of selectedDay.goals" class="goal-item">
-              <div class="goal-top">
-                <span class="goal-name">{{ g.label }}</span>
-                <span class="badge-carried"
-                      *ngIf="g.carriedOver && !g.completed">↑ arrastrado</span>
-                <span class="badge-done" *ngIf="g.completed">✓ Completado</span>
-              </div>
-              <div class="goal-controls">
-                <input type="number"
-                       [(ngModel)]="g.currentValue"
-                       min="0"
-                       [max]="g.targetValue"/>
-                <span class="goal-max">/ {{ g.targetValue }}</span>
-                <button class="btn-save" (click)="saveGoal(g)">Guardar</button>
-                <button class="btn-del" (click)="deleteGoal(g)">Eliminar
-                </button>
-              </div>
-              <div class="goal-bar">
-                <div class="goal-bar-fill"
-                     [class.done]="g.completed"
-                     [style.width.%]="pct(g)"></div>
-              </div>
-            </div>
-            <p class="empty-msg" *ngIf="selectedDay.goals.length === 0">Sin
-              metas para este día</p>
-          </div>
-
-          <hr class="divider"/>
-
-          <div class="add-title">Añadir meta</div>
-          <div class="add-form">
-            <input type="text"
-                   [(ngModel)]="newLabel"
-                   placeholder="Nombre (ej: Pasos)"
-                   maxlength="50"/>
-            <input type="number"
-                   [(ngModel)]="newTarget"
-                   placeholder="Objetivo (ej: 10000)"
-                   min="1"/>
-            <button class="btn-add" (click)="addGoal()">+ Añadir meta</button>
-            <button class="btn-cancel" (click)="selectedDay = null">Cerrar
-            </button>
-          </div>
-
-        </div>
-      </div>
-
     </div>
   `
 })
@@ -585,7 +544,10 @@ export class CalendarComponent implements OnInit {
   currentMonth = new Date().getMonth();
   currentYear = new Date().getFullYear();
   calendarDays: CalendarDay[] = [];
+
   selectedDay: CalendarDay | null = null;
+  modalGoals: Goal[] = [];
+  loadingModal = false;
   newLabel = '';
   newTarget: number | null = null;
 
@@ -606,44 +568,47 @@ export class CalendarComponent implements OnInit {
 
   buildCalendar() {
     const firstDay = new Date(this.currentYear, this.currentMonth, 1);
-    let startDow = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    let dow = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
     const start = new Date(firstDay);
-    start.setDate(start.getDate() - startDow);
+    start.setDate(start.getDate() - dow);
 
     this.calendarDays = [];
     const d = new Date(start);
     for (let i = 0; i < 42; i++) {
       this.calendarDays.push({
         date: new Date(d),
-        dateStr: this.toDateStr(d),
-        isToday: this.toDateStr(d) === this.toDateStr(this.today),
+        dateStr: this.toStr(d),
+        isToday: this.toStr(d) === this.toStr(this.today),
         isCurrentMonth: d.getMonth() === this.currentMonth,
-        goals: []
+        goalCount: 0,
+        hasCompleted: false
       });
       d.setDate(d.getDate() + 1);
     }
-    this.loadMonthGoals();
-  }
-
-  loadMonthGoals() {
-    this.calendarDays
-      .filter(d => d.isCurrentMonth)
-      .forEach(day => {
-        this.goalService.getGoals(day.dateStr).subscribe({
-          next: goals => day.goals = goals
-        });
-      });
   }
 
   selectDay(day: CalendarDay) {
+    this.selectedDay = day;
+    this.modalGoals = [];
+    this.loadingModal = true;
     this.newLabel = '';
     this.newTarget = null;
+
     this.goalService.getGoals(day.dateStr).subscribe({
       next: goals => {
-        day.goals = goals;
-        this.selectedDay = { ...day, goals: [...goals] };
-      }
+        this.modalGoals = goals;
+        this.loadingModal = false;
+        day.goalCount = goals.length;
+        day.hasCompleted = goals.some(g => g.completed);
+      },
+      error: () => this.loadingModal = false
     });
+  }
+
+  closeIfBackdrop(e: MouseEvent) {
+    if ((e.target as HTMLElement).classList.contains('overlay')) {
+      this.selectedDay = null;
+    }
   }
 
   addGoal() {
@@ -654,9 +619,8 @@ export class CalendarComponent implements OnInit {
       date: this.selectedDay.dateStr
     }).subscribe({
       next: g => {
-        this.selectedDay!.goals = [...this.selectedDay!.goals, g];
-        const day = this.calendarDays.find(d => d.dateStr === this.selectedDay!.dateStr);
-        if (day) day.goals = [...this.selectedDay!.goals];
+        this.modalGoals = [...this.modalGoals, g];
+        this.selectedDay!.goalCount = this.modalGoals.length;
         this.newLabel = '';
         this.newTarget = null;
       }
@@ -666,10 +630,9 @@ export class CalendarComponent implements OnInit {
   saveGoal(g: Goal) {
     this.goalService.updateGoal(g.id, g.currentValue).subscribe({
       next: updated => {
-        const idx = this.selectedDay!.goals.findIndex(x => x.id === g.id);
-        if (idx > -1) this.selectedDay!.goals[idx] = updated;
-        const day = this.calendarDays.find(d => d.dateStr === this.selectedDay?.dateStr);
-        if (day) day.goals = [...this.selectedDay!.goals];
+        const i = this.modalGoals.findIndex(x => x.id === g.id);
+        if (i > -1) this.modalGoals[i] = updated;
+        this.selectedDay!.hasCompleted = this.modalGoals.some(x => x.completed);
       }
     });
   }
@@ -677,36 +640,40 @@ export class CalendarComponent implements OnInit {
   deleteGoal(g: Goal) {
     this.goalService.deleteGoal(g.id).subscribe({
       next: () => {
-        this.selectedDay!.goals = this.selectedDay!.goals.filter(x => x.id !== g.id);
-        const day = this.calendarDays.find(d => d.dateStr === this.selectedDay!.dateStr);
-        if (day) day.goals = [...this.selectedDay!.goals];
+        this.modalGoals = this.modalGoals.filter(x => x.id !== g.id);
+        this.selectedDay!.goalCount = this.modalGoals.length;
+        this.selectedDay!.hasCompleted = this.modalGoals.some(x => x.completed);
       }
     });
   }
 
   prevMonth() {
+    this.selectedDay = null;
     if (this.currentMonth === 0) {
       this.currentMonth = 11;
       this.currentYear--;
     } else this.currentMonth--;
-    this.selectedDay = null;
     this.buildCalendar();
   }
 
   nextMonth() {
+    this.selectedDay = null;
     if (this.currentMonth === 11) {
       this.currentMonth = 0;
       this.currentYear++;
     } else this.currentMonth++;
-    this.selectedDay = null;
     this.buildCalendar();
+  }
+
+  arr(n: number) {
+    return Array(Math.min(n, 5));
   }
 
   pct(g: Goal) {
     return Math.min(100, Math.round((g.currentValue / g.targetValue) * 100));
   }
 
-  toDateStr(d: Date) {
+  toStr(d: Date) {
     return d.toISOString().split('T')[0];
   }
 
