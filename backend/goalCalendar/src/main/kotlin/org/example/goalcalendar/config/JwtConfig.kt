@@ -12,6 +12,11 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter() {
 
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val path = request.requestURI
+        return path.startsWith("/api/auth/")
+    }
+
     override fun doFilterInternal(
         req: HttpServletRequest,
         res: HttpServletResponse,
