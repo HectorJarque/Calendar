@@ -12,10 +12,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter() {
 
-    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        val path = request.requestURI
-        return path.startsWith("/api/auth/")
-    }
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean =
+        request.requestURI.startsWith("/api/auth/")
 
     override fun doFilterInternal(
         req: HttpServletRequest,
@@ -24,14 +22,21 @@ class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter()
     ) {
         val header = req.getHeader("Authorization")
 
-        if (header != null && header.startsWith("Bearer ")) {
-            val token = header.removePrefix("Bearer ")
-            if (jwtService.isValid(token)) {
-                val userId = jwtService.extractUserId(token)
-                val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
-                SecurityContextHolder.getContext().authentication = auth
-            }
+        if (header == null || ! header.startsWith("Bearer ")) {
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token requerido")
+            return
         }
+
+        val token = header.removePrefix("Bearer ")
+
+        if (! jwtService.isValid(token)) {
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido")
+            return
+        }
+
+        val userId = jwtService.extractUserId(token)
+        val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
+        SecurityContextHolder.getContext().authentication = auth
         chain.doFilter(req, res)
     }
 }
