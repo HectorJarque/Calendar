@@ -31,6 +31,13 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .headers { headers ->
+                headers.frameOptions { it.deny() }
+                headers.contentTypeOptions { }
+                headers.httpStrictTransportSecurity { hsts ->
+                    hsts.maxAgeInSeconds(31536000)
+                }
+            }
         return http.build()
     }
 
