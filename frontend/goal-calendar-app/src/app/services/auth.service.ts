@@ -15,7 +15,7 @@ export class AuthService {
         email,
         password
       })
-      .pipe(tap(r => localStorage.setItem('token', r.token)));
+      .pipe(tap(r => sessionStorage.setItem('token', r.token)));
   }
 
   login(email: string, password: string) {
@@ -24,15 +24,15 @@ export class AuthService {
         email,
         password
       })
-      .pipe(tap(r => localStorage.setItem('token', r.token)));
+      .pipe(tap(r => sessionStorage.setItem('token', r.token)));
   }
 
   logout() {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token');
   }
 }

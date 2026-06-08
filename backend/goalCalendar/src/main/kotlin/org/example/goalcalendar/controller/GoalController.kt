@@ -12,19 +12,15 @@ import java.security.Principal
 import java.time.LocalDate
 
 data class CreateGoalRequest(
-    @field:NotBlank(message = "El nombre no puede estar vacío")
-    @field:Size(max = 50, message = "Máximo 50 caracteres")
-    val label: String,
-
-    @field:Min(value = 1, message = "El objetivo debe ser al menos 1")
-    val targetValue: Int,
-
+    @field:NotBlank @field:Size(max = 50) val label: String,
+    @field:Min(1) val targetValue: Int,
     val date: String
 )
 
 data class UpdateGoalRequest(
-    @field:Min(value = 0, message = "El valor no puede ser negativo")
-    val currentValue: Int
+    @field:Min(0) val currentValue: Int,
+    @field:Size(max = 50) val label: String? = null,
+    @field:Min(1) val targetValue: Int? = null
 )
 
 @RestController
@@ -39,22 +35,19 @@ class GoalController(private val goalService: GoalService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createGoal(
-        @Valid @RequestBody req: CreateGoalRequest,
-        principal: Principal
-    ) = goalService.createGoal(
-        principal.name,
-        req.label,
-        req.targetValue,
-        LocalDate.parse(req.date)
-    )
+    fun createGoal(@Valid @RequestBody req: CreateGoalRequest, principal: Principal) =
+        goalService.createGoal(principal.name, req.label, req.targetValue, LocalDate.parse(req.date))
 
     @PutMapping("/{id}")
     fun updateGoal(
         @PathVariable id: String,
         @Valid @RequestBody req: UpdateGoalRequest,
         principal: Principal
-    ) = goalService.updateGoal(id, principal.name, req.currentValue)
+    ) = goalService.updateGoal(id, principal.name, req)
+
+    @PatchMapping("/{id}/carry")
+    fun carryOver(@PathVariable id: String, principal: Principal) =
+        goalService.manualCarryOver(id, principal.name)
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -24,8 +24,16 @@ export class GoalService {
     return this.http.post<Goal>(`${environment.apiUrl}/goals`, goal);
   }
 
-  updateGoal(id: string, currentValue: number) {
-    return this.http.put<Goal>(`${environment.apiUrl}/goals/${id}`, { currentValue });
+  updateGoal(id: string, currentValue: number, label?: string, targetValue?: number) {
+    return this.http.put<Goal>(`${environment.apiUrl}/goals/${id}`, {
+      currentValue,
+      ...(label !== undefined && { label }),
+      ...(targetValue !== undefined && { targetValue })
+    });
+  }
+
+  carryOver(id: string) {
+    return this.http.patch<Goal>(`${environment.apiUrl}/goals/${id}/carry`, {});
   }
 
   deleteGoal(id: string) {
