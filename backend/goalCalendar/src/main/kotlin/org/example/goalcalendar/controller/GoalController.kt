@@ -20,7 +20,8 @@ data class CreateGoalRequest(
 data class UpdateGoalRequest(
     @field:Min(0) val currentValue: Int,
     @field:Size(max = 50) val label: String? = null,
-    @field:Min(1) val targetValue: Int? = null
+    @field:Min(1) val targetValue: Int? = null,
+    val carriedOver: Boolean? = null
 )
 
 @RestController

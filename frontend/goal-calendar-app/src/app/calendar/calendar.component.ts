@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GoalService, Goal } from '../services/goal.service';
@@ -187,7 +187,6 @@ interface CalendarDay {
       background: #fcd34d;
     }
 
-    /* OVERLAY */
     .overlay {
       position: fixed;
       inset: 0;
@@ -251,7 +250,6 @@ interface CalendarDay {
       font-weight: 600;
     }
 
-    /* GOAL CARD */
     .goal-card {
       border-radius: 12px;
       padding: 10px 12px;
@@ -288,7 +286,7 @@ interface CalendarDay {
       flex: 1;
     }
 
-    .gc-name input {
+    .gc-name-input {
       font-size: 0.85rem;
       font-weight: 700;
       color: #831843;
@@ -299,7 +297,7 @@ interface CalendarDay {
       width: 100%;
     }
 
-    .gc-name input:focus {
+    .gc-name-input:focus {
       border-color: #ec4899;
     }
 
@@ -315,6 +313,7 @@ interface CalendarDay {
       padding: 2px 7px;
       border-radius: 10px;
       white-space: nowrap;
+      cursor: default;
     }
 
     .b-done {
@@ -386,7 +385,7 @@ interface CalendarDay {
       background: #db2777;
     }
 
-    .btn-carry {
+    .btn-carry-on {
       background: #fef3c7;
       color: #92400e;
       border: 1.5px solid #fde68a;
@@ -397,8 +396,23 @@ interface CalendarDay {
       font-weight: 700;
     }
 
-    .btn-carry:hover {
+    .btn-carry-on:hover {
       background: #fde68a;
+    }
+
+    .btn-carry-off {
+      background: #fff0f9;
+      color: #be185d;
+      border: 1.5px solid #fbcfe8;
+      padding: 5px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .btn-carry-off:hover {
+      background: #fce7f3;
     }
 
     .btn-edit {
@@ -457,8 +471,11 @@ interface CalendarDay {
     .carried-info {
       font-size: 0.72rem;
       color: #92400e;
-      margin-top: 4px;
+      margin-top: 5px;
       font-weight: 600;
+      background: #fef9c3;
+      padding: 4px 8px;
+      border-radius: 6px;
     }
 
     .empty {
@@ -583,14 +600,14 @@ interface CalendarDay {
 
         <div class="modal-head">
           <span class="modal-date">{{ formatDate(selectedDay.date) }}</span>
-          <button class="btn-x" (click)="selectedDay = null">✕</button>
+          <button class="btn-x" (click)="closeModal()">✕</button>
         </div>
 
         <div *ngIf="loadingModal" class="loading">Cargando metas... 🌸</div>
 
         <ng-container *ngIf="!loadingModal">
 
-          <div *ngFor="let g of modalGoals"
+          <div *ngFor="let g of modalGoals; trackBy: trackGoal"
                class="goal-card"
                [class.done-card]="g.completed"
                [class.carried-card]="g.carriedOver && !g.completed"
@@ -598,9 +615,8 @@ interface CalendarDay {
 
             <div class="gc-top">
               <div class="gc-name">
-                <input *ngIf="editingId === g.id"
-                       type="text"
-                       [(ngModel)]="editLabel"/>
+                <input *ngIf="editingId === g.id" class="gc-name-input"
+                       type="text" [(ngModel)]="editLabel"/>
                 <span *ngIf="editingId !== g.id">{{ g.label }}</span>
               </div>
               <div class="badges">
@@ -618,19 +634,20 @@ interface CalendarDay {
                      min="0"/>
               <span *ngIf="editingId !== g.id"
                     class="gc-max">/ {{ g.targetValue }}</span>
-              <input *ngIf="editingId === g.id"
-                     class="gc-target"
-                     type="number"
-                     [(ngModel)]="editTarget"
-                     min="1"/>
+              <input *ngIf="editingId === g.id" class="gc-target"
+                     type="number" [(ngModel)]="editTarget" min="1"/>
               <button class="btn-save" (click)="saveGoal(g)">Guardar</button>
               <button class="btn-edit" (click)="toggleEdit(g)">
                 {{ editingId === g.id ? 'Cancelar' : 'Editar' }}
               </button>
-              <button class="btn-carry"
-                      *ngIf="!g.carriedOver && !g.completed"
-                      (click)="carryOver(g)"
-                      title="Arrastrar al día siguiente">↑ Arrastrar
+              <button *ngIf="!g.carriedOver"
+                      class="btn-carry-on" (click)="toggleCarried(g)"
+                      title="Marcar como arrastrado al día siguiente">↑
+                Arrastrar
+              </button>
+              <button *ngIf="g.carriedOver && !g.completed"
+                      class="btn-carry-off" (click)="toggleCarried(g)"
+                      title="Quitar arrastrado">✕ No arrastrar
               </button>
               <button class="btn-del" (click)="deleteGoal(g)">Eliminar</button>
             </div>
@@ -643,28 +660,22 @@ interface CalendarDay {
             </div>
 
             <div class="carried-info" *ngIf="g.carriedOver && !g.completed">
-              Meta arrastrada de un día anterior —
-              quedan {{ g.targetValue - g.currentValue }} por completar
+              ↑ Meta arrastrada — quedan {{ g.targetValue - g.currentValue }}por
+              completar
             </div>
           </div>
 
-          <p class="empty" *ngIf="modalGoals.length === 0">Sin metas para este
-            día — ¡añade una!</p>
+          <p class="empty" *ngIf="modalGoals.length === 0">Sin metas — ¡añade
+            una!</p>
 
           <hr class="sep"/>
           <div class="add-label">+ Nueva meta</div>
-          <input class="field"
-                 type="text"
-                 [(ngModel)]="newLabel"
-                 placeholder="Nombre (ej: Pasos, Agua...)"
-                 maxlength="50"/>
-          <input class="field"
-                 type="number"
-                 [(ngModel)]="newTarget"
-                 placeholder="Objetivo (ej: 10000)"
-                 min="1"/>
+          <input class="field" type="text" [(ngModel)]="newLabel"
+                 placeholder="Nombre (ej: Pasos, Agua...)" maxlength="50"/>
+          <input class="field" type="number" [(ngModel)]="newTarget"
+                 placeholder="Objetivo (ej: 10000)" min="1"/>
           <button class="btn-add" (click)="addGoal()">Añadir meta</button>
-          <button class="btn-close" (click)="selectedDay = null">Cerrar</button>
+          <button class="btn-close" (click)="closeModal()">Cerrar</button>
         </ng-container>
 
       </div>
@@ -674,6 +685,7 @@ interface CalendarDay {
 export class CalendarComponent implements OnInit {
   authService = inject(AuthService);
   private goalService = inject(GoalService);
+  private cdr = inject(ChangeDetectorRef);
 
   today = new Date();
   currentMonth = new Date().getMonth();
@@ -685,7 +697,6 @@ export class CalendarComponent implements OnInit {
   loadingModal = false;
   newLabel = '';
   newTarget: number | null = null;
-
   editingId: string | null = null;
   editLabel = '';
   editTarget = 0;
@@ -703,7 +714,6 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit() {
     this.buildCalendar();
-    // Carga automática del día de hoy
     const todayDay = this.calendarDays.find(d => d.isToday);
     if (todayDay) this.selectDay(todayDay);
   }
@@ -713,7 +723,6 @@ export class CalendarComponent implements OnInit {
     let dow = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
     const start = new Date(firstDay);
     start.setDate(start.getDate() - dow);
-
     this.calendarDays = [];
     const d = new Date(start);
     for (let i = 0; i < 42; i++) {
@@ -737,15 +746,20 @@ export class CalendarComponent implements OnInit {
     this.editingId = null;
     this.newLabel = '';
     this.newTarget = null;
+    this.cdr.detectChanges();
 
     this.goalService.getGoals(day.dateStr).subscribe({
       next: goals => {
-        this.modalGoals = goals;
+        this.modalGoals = [...goals];
         this.loadingModal = false;
         day.goalCount = goals.length;
         day.completedCount = goals.filter(g => g.completed).length;
+        this.cdr.detectChanges();
       },
-      error: () => this.loadingModal = false
+      error: () => {
+        this.loadingModal = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -757,6 +771,7 @@ export class CalendarComponent implements OnInit {
       this.editLabel = g.label;
       this.editTarget = g.targetValue;
     }
+    this.cdr.detectChanges();
   }
 
   addGoal() {
@@ -768,33 +783,39 @@ export class CalendarComponent implements OnInit {
     }).subscribe({
       next: g => {
         this.modalGoals = [...this.modalGoals, g];
-        this.updateDayDots();
         this.newLabel = '';
         this.newTarget = null;
+        this.updateDayDots();
+        this.cdr.detectChanges();
       }
     });
   }
 
   saveGoal(g: Goal) {
-    const label = this.editingId === g.id ? this.editLabel : undefined;
-    const targetValue = this.editingId === g.id ? this.editTarget : undefined;
-
-    this.goalService.updateGoal(g.id, g.currentValue, label, targetValue).subscribe({
+    const isEditing = this.editingId === g.id;
+    this.goalService.updateGoal(g.id, {
+      currentValue: g.currentValue,
+      label: isEditing ? this.editLabel : undefined,
+      targetValue: isEditing ? this.editTarget : undefined
+    }).subscribe({
       next: updated => {
-        const i = this.modalGoals.findIndex(x => x.id === g.id);
-        if (i > -1) this.modalGoals[i] = updated;
+        this.modalGoals = this.modalGoals.map(x => x.id === g.id ? updated : x);
         this.editingId = null;
         this.updateDayDots();
+        this.cdr.detectChanges();
       }
     });
   }
 
-  carryOver(g: Goal) {
-    this.goalService.carryOver(g.id).subscribe({
+  toggleCarried(g: Goal) {
+    this.goalService.updateGoal(g.id, {
+      currentValue: g.currentValue,
+      carriedOver: !g.carriedOver
+    }).subscribe({
       next: updated => {
-        const i = this.modalGoals.findIndex(x => x.id === g.id);
-        if (i > -1) this.modalGoals[i] = updated;
+        this.modalGoals = this.modalGoals.map(x => x.id === g.id ? updated : x);
         this.updateDayDots();
+        this.cdr.detectChanges();
       }
     });
   }
@@ -804,8 +825,21 @@ export class CalendarComponent implements OnInit {
       next: () => {
         this.modalGoals = this.modalGoals.filter(x => x.id !== g.id);
         this.updateDayDots();
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  closeModal() {
+    this.selectedDay = null;
+    this.editingId = null;
+    this.cdr.detectChanges();
+  }
+
+  onOverlayClick(e: MouseEvent) {
+    if ((e.target as HTMLElement).classList.contains('overlay')) {
+      this.closeModal();
+    }
   }
 
   updateDayDots() {
@@ -817,14 +851,8 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  onOverlayClick(e: MouseEvent) {
-    if ((e.target as HTMLElement).classList.contains('overlay')) {
-      this.selectedDay = null;
-    }
-  }
-
   prevMonth() {
-    this.selectedDay = null;
+    this.closeModal();
     if (this.currentMonth === 0) {
       this.currentMonth = 11;
       this.currentYear--;
@@ -833,12 +861,16 @@ export class CalendarComponent implements OnInit {
   }
 
   nextMonth() {
-    this.selectedDay = null;
+    this.closeModal();
     if (this.currentMonth === 11) {
       this.currentMonth = 0;
       this.currentYear++;
     } else this.currentMonth++;
     this.buildCalendar();
+  }
+
+  trackGoal(index: number, g: Goal) {
+    return g.id;
   }
 
   arr(n: number) {

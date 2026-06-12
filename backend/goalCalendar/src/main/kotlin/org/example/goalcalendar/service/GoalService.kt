@@ -32,6 +32,7 @@ class GoalService(private val goalRepo: GoalRepository) {
 
         goal.currentValue = req.currentValue
         if (req.label != null) goal.label = req.label
+        if (req.carriedOver != null) goal.carriedOver = req.carriedOver
         if (req.targetValue != null) {
             goal.targetValue = req.targetValue
             goal.completed = req.currentValue >= req.targetValue

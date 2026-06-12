@@ -24,12 +24,13 @@ export class GoalService {
     return this.http.post<Goal>(`${environment.apiUrl}/goals`, goal);
   }
 
-  updateGoal(id: string, currentValue: number, label?: string, targetValue?: number) {
-    return this.http.put<Goal>(`${environment.apiUrl}/goals/${id}`, {
-      currentValue,
-      ...(label !== undefined && { label }),
-      ...(targetValue !== undefined && { targetValue })
-    });
+  updateGoal(id: string, data: {
+    currentValue: number;
+    label?: string;
+    targetValue?: number;
+    carriedOver?: boolean;
+  }) {
+    return this.http.put<Goal>(`${environment.apiUrl}/goals/${id}`, data);
   }
 
   carryOver(id: string) {
