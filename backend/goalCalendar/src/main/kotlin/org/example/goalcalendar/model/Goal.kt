@@ -17,5 +17,4 @@ class Goal {
     var currentValue: Int = 0
     var date: LocalDate = LocalDate.now()
     var completed: Boolean = false
-    var carriedOver: Boolean = false
 }

@@ -27,193 +27,251 @@ interface CalendarDay {
     .page {
       min-height: 100vh;
       background: #fff0f6;
-      padding: 1.5rem 1rem;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
-    header {
+    /* HEADER */
+    .topbar {
+      background: white;
+      border-bottom: 1.5px solid #fce7f3;
+      padding: 0.9rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .title {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: #9d174d;
     }
 
     .btn-logout {
-      background: white;
-      border: 1.5px solid #fbcfe8;
+      background: #fce7f3;
+      border: none;
       color: #be185d;
-      padding: 0.4rem 1rem;
+      padding: 0.4rem 0.9rem;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 600;
+      font-size: 0.8rem;
+      font-weight: 700;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-logout:hover {
-      background: #fce7f3;
-    }
-
+    /* NAV */
     .nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      padding: 0.9rem 1rem 0.5rem;
     }
 
     .btn-nav {
       background: white;
       border: 1.5px solid #fbcfe8;
       color: #be185d;
-      padding: 0.4rem 1.1rem;
-      border-radius: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
       cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-nav:hover {
-      background: #fdf2f8;
+    .btn-nav:active {
+      background: #fce7f3;
     }
 
     .month-label {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 800;
       color: #9d174d;
     }
 
+    /* WEEKDAYS */
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      margin-bottom: 6px;
+      padding: 0 0.75rem;
+      margin-bottom: 4px;
     }
 
     .weekdays span {
-      font-size: 0.7rem;
+      text-align: center;
+      font-size: 0.65rem;
       font-weight: 700;
       color: #f9a8d4;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       padding: 4px 0;
     }
 
+    /* GRID */
     .grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      gap: 4px;
+      padding: 0 0.75rem 1rem;
     }
 
     .day {
-      min-height: 72px;
+      aspect-ratio: 1;
       background: white;
       border: 1.5px solid #fce7f3;
-      border-radius: 12px;
-      padding: 7px 6px;
+      border-radius: 10px;
+      padding: 4px;
       cursor: pointer;
-      transition: all 0.15s;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.1s;
+      position: relative;
+      overflow: hidden;
     }
 
-    .day:hover {
-      border-color: #f472b6;
+    .day:active {
       background: #fdf2f8;
     }
 
     .day.other-month {
       background: transparent;
       border-color: transparent;
-      opacity: 0.3;
       pointer-events: none;
+      opacity: 0.2;
     }
 
     .day.today {
       border-color: #ec4899;
-      border-width: 2.5px;
-      background: #fff0f9;
-      box-shadow: 0 0 0 3px #fce7f3;
+      border-width: 2px;
+      background: #fff5f9;
     }
 
     .day.selected {
       background: #fce7f3;
       border-color: #db2777;
+      border-width: 2px;
     }
 
     .day-num {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: #9d174d;
-      margin-bottom: 4px;
+      line-height: 1;
+      margin-bottom: 3px;
     }
 
-    .today-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
+    .today-circle {
+      width: 18px;
+      height: 18px;
       background: #ec4899;
       color: white;
       border-radius: 50%;
-      font-size: 0.7rem;
-      font-weight: 800;
-    }
-
-    .day-dots {
-      display: flex;
-      gap: 3px;
-      flex-wrap: wrap;
-      margin-top: auto;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #f9a8d4;
-    }
-
-    .dot.done {
-      background: #6ee7b7;
-    }
-
-    .dot.carried {
-      background: #fcd34d;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(157, 23, 77, 0.2);
-      z-index: 999;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      font-size: 0.65rem;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .day-bar {
+      width: 100%;
+      height: 3px;
+      background: #fce7f3;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: auto;
+    }
+
+    .day-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: #f472b6;
+      transition: width 0.3s;
+    }
+
+    .day-bar-fill.all-done {
+      background: #34d399;
+    }
+
+    .day-count {
+      font-size: 0.58rem;
+      color: #f9a8d4;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .day-count.has-goals {
+      color: #be185d;
+    }
+
+    /* OVERLAY */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(100, 20, 60, 0.25);
+      z-index: 999;
+      display: flex;
+      align-items: flex-end;
+      padding: 0;
+    }
+
+    @media (min-width: 600px) {
+      .overlay {
+        align-items: center;
+        padding: 1rem;
+      }
+      .modal {
+        border-radius: 20px !important;
+        max-height: 85vh !important;
+      }
     }
 
     .modal {
       background: white;
-      border-radius: 20px;
-      border: 2px solid #fbcfe8;
+      border-radius: 20px 20px 0 0;
+      border-top: 2px solid #fbcfe8;
       width: 100%;
-      max-width: 440px;
-      max-height: 88vh;
+      max-width: 600px;
+      margin: 0 auto;
+      max-height: 90vh;
       overflow-y: auto;
-      padding: 1.5rem;
+      padding: 0 1rem 2rem;
+      animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: #fbcfe8;
+      border-radius: 2px;
+      margin: 0.75rem auto 1rem;
     }
 
     .modal-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
+      padding: 0 0.25rem;
     }
 
     .modal-date {
@@ -223,8 +281,8 @@ interface CalendarDay {
     }
 
     .btn-x {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       background: #fce7f3;
       border: none;
       border-radius: 50%;
@@ -235,35 +293,77 @@ interface CalendarDay {
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .btn-x:hover {
-      background: #fbcfe8;
     }
 
     .loading {
       text-align: center;
       color: #f9a8d4;
-      font-size: 0.85rem;
-      padding: 1.5rem 0;
-      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 2rem 0;
     }
 
-    .goal-card {
+    /* SUMMARY */
+    .summary {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .sum-chip {
+      flex: 1;
+      padding: 0.6rem;
       border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .sum-chip.total {
+      background: #fff0f6;
       border: 1.5px solid #fce7f3;
     }
 
-    .goal-card.normal {
-      background: #fff5f9;
+    .sum-chip.done {
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
     }
 
-    .goal-card.carried-card {
+    .sum-chip.pending {
       background: #fffbeb;
-      border-color: #fde68a;
+      border: 1.5px solid #fde68a;
+    }
+
+    .sum-num {
+      font-size: 1.3rem;
+      font-weight: 800;
+      display: block;
+    }
+
+    .sum-chip.total .sum-num {
+      color: #be185d;
+    }
+
+    .sum-chip.done .sum-num {
+      color: #065f46;
+    }
+
+    .sum-chip.pending .sum-num {
+      color: #92400e;
+    }
+
+    .sum-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      opacity: 0.7;
+    }
+
+    /* GOAL CARD */
+    .goal-card {
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border: 1.5px solid #fce7f3;
+      background: #fff5f9;
     }
 
     .goal-card.done-card {
@@ -271,192 +371,68 @@ interface CalendarDay {
       border-color: #bbf7d0;
     }
 
-    .gc-top {
+    .gc-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 6px;
+      align-items: center;
       margin-bottom: 8px;
     }
 
-    .gc-name {
-      font-size: 0.88rem;
+    .gc-label {
+      font-size: 0.9rem;
       font-weight: 700;
       color: #831843;
-      flex: 1;
     }
 
-    .gc-name-input {
-      font-size: 0.85rem;
+    .gc-label-input {
+      font-size: 0.9rem;
       font-weight: 700;
       color: #831843;
       border: 1.5px solid #fbcfe8;
       border-radius: 8px;
-      padding: 3px 7px;
+      padding: 3px 8px;
       outline: none;
       width: 100%;
     }
 
-    .gc-name-input:focus {
+    .gc-label-input:focus {
       border-color: #ec4899;
     }
 
-    .badges {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      font-size: 0.62rem;
+    .badge-done {
+      font-size: 0.65rem;
       font-weight: 700;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 10px;
-      white-space: nowrap;
-      cursor: default;
-    }
-
-    .b-done {
       background: #d1fae5;
       color: #065f46;
     }
 
-    .b-carried {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .gc-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 7px;
-      flex-wrap: wrap;
-    }
-
-    .gc-input {
-      width: 65px;
-      padding: 5px 7px;
-      border: 1.5px solid #fbcfe8;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: #831843;
-      text-align: center;
-      outline: none;
-    }
-
-    .gc-input:focus {
-      border-color: #ec4899;
-    }
-
-    .gc-target {
-      width: 65px;
-      padding: 5px 7px;
-      border: 1.5px solid #fde68a;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: #92400e;
-      text-align: center;
-      outline: none;
-    }
-
-    .gc-target:focus {
-      border-color: #f59e0b;
-    }
-
-    .gc-max {
-      font-size: 0.8rem;
-      color: #f9a8d4;
-      font-weight: 600;
-    }
-
-    .btn-save {
-      background: #ec4899;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.75rem;
+    .badge-pend {
+      font-size: 0.65rem;
       font-weight: 700;
-    }
-
-    .btn-save:hover {
-      background: #db2777;
-    }
-
-    .btn-carry-on {
-      background: #fef3c7;
-      color: #92400e;
-      border: 1.5px solid #fde68a;
-      padding: 5px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .btn-carry-on:hover {
-      background: #fde68a;
-    }
-
-    .btn-carry-off {
-      background: #fff0f9;
-      color: #be185d;
-      border: 1.5px solid #fbcfe8;
-      padding: 5px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .btn-carry-off:hover {
+      padding: 3px 8px;
+      border-radius: 10px;
       background: #fce7f3;
+      color: #9d174d;
     }
 
-    .btn-edit {
-      background: #f0f9ff;
-      color: #0369a1;
-      border: 1.5px solid #bae6fd;
-      padding: 5px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .btn-edit:hover {
-      background: #e0f2fe;
-    }
-
-    .btn-del {
-      background: white;
-      color: #e11d48;
-      border: 1.5px solid #fecdd3;
-      padding: 5px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-
-    .btn-del:hover {
-      background: #fff1f2;
+    .gc-progress {
+      margin-bottom: 10px;
     }
 
     .gc-bar {
-      height: 5px;
+      height: 6px;
       background: #fce7f3;
       border-radius: 3px;
       overflow: hidden;
-      margin-top: 2px;
+      margin-bottom: 4px;
     }
 
     .gc-fill {
       height: 100%;
-      background: #f472b6;
       border-radius: 3px;
+      background: #f472b6;
       transition: width 0.3s;
     }
 
@@ -464,52 +440,133 @@ interface CalendarDay {
       background: #34d399;
     }
 
-    .gc-fill.carried {
-      background: #fbbf24;
+    .gc-pct {
+      font-size: 0.7rem;
+      color: #be185d;
+      font-weight: 700;
     }
 
-    .carried-info {
-      font-size: 0.72rem;
+    .gc-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .gc-input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1.5px solid #fbcfe8;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #831843;
+      text-align: center;
+      outline: none;
+      min-width: 0;
+    }
+
+    .gc-input:focus {
+      border-color: #ec4899;
+    }
+
+    .gc-sep {
+      color: #f9a8d4;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .gc-target-input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1.5px solid #fde68a;
+      border-radius: 10px;
+      font-size: 0.95rem;
       color: #92400e;
-      margin-top: 5px;
+      text-align: center;
+      outline: none;
+      min-width: 0;
+    }
+
+    .gc-target-val {
+      font-size: 0.85rem;
+      color: #f9a8d4;
       font-weight: 600;
-      background: #fef9c3;
-      padding: 4px 8px;
-      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .gc-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .btn-sm {
+      flex: 1;
+      padding: 8px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-save-sm {
+      background: #ec4899;
+      color: white;
+    }
+
+    .btn-save-sm:active {
+      background: #db2777;
+    }
+
+    .btn-edit-sm {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1.5px solid #bfdbfe !important;
+    }
+
+    .btn-del-sm {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1.5px solid #fecdd3 !important;
     }
 
     .empty {
       text-align: center;
       color: #f9a8d4;
-      font-size: 0.85rem;
-      padding: 0.75rem 0;
+      font-size: 0.9rem;
+      padding: 1.5rem 0;
       font-weight: 600;
     }
 
+    /* ADD FORM */
     .sep {
       border: none;
       border-top: 1.5px solid #fce7f3;
       margin: 1rem 0;
     }
 
-    .add-label {
+    .add-title {
       font-size: 0.82rem;
       font-weight: 800;
       color: #be185d;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .field {
       width: 100%;
-      padding: 0.55rem 0.85rem;
+      padding: 0.75rem 1rem;
       border: 1.5px solid #fbcfe8;
-      border-radius: 10px;
-      font-size: 0.9rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
       color: #831843;
       background: white;
       outline: none;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: block;
+      -webkit-appearance: none;
     }
 
     .field:focus {
@@ -525,52 +582,48 @@ interface CalendarDay {
       background: #ec4899;
       color: white;
       border: none;
-      padding: 0.6rem;
-      border-radius: 10px;
+      padding: 0.85rem;
+      border-radius: 14px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-add:hover {
+    .btn-add:active {
       background: #db2777;
     }
 
-    .btn-close {
+    .btn-cancel {
       width: 100%;
       background: white;
       color: #be185d;
       border: 1.5px solid #fbcfe8;
-      padding: 0.5rem;
-      border-radius: 10px;
+      padding: 0.75rem;
+      border-radius: 14px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
-    }
-
-    .btn-close:hover {
-      background: #fdf2f8;
     }
   `],
   template: `
     <div class="page">
-      <header>
+
+      <div class="topbar">
         <span class="title">🌸 Goal Calendar</span>
-        <button class="btn-logout" (click)="authService.logout()">Cerrar
-          sesión
-        </button>
-      </header>
+        <button class="btn-logout" (click)="authService.logout()">Salir</button>
+      </div>
 
       <div class="nav">
-        <button class="btn-nav" (click)="prevMonth()">← Anterior</button>
+        <button class="btn-nav" (click)="prevMonth()">‹</button>
         <span class="month-label">{{ monthName }} {{ year }}</span>
-        <button class="btn-nav" (click)="nextMonth()">Siguiente →</button>
+        <button class="btn-nav" (click)="nextMonth()">›</button>
       </div>
 
       <div class="weekdays">
-        <span>Lun</span><span>Mar</span><span>Mié</span>
-        <span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+        <span>L</span><span>M</span><span>X</span>
+        <span>J</span><span>V</span><span>S</span><span>D</span>
       </div>
 
       <div class="grid">
@@ -580,104 +633,132 @@ interface CalendarDay {
              [class.today]="day.isToday"
              [class.selected]="selectedDay?.dateStr === day.dateStr"
              (click)="selectDay(day)">
-          <div class="day-num">
-            <span class="today-badge"
-                  *ngIf="day.isToday">{{ day.date.getDate() }}</span>
-            <span *ngIf="!day.isToday">{{ day.date.getDate() }}</span>
+
+          <div class="today-circle"
+               *ngIf="day.isToday">{{ day.date.getDate() }}
           </div>
-          <div class="day-dots" *ngIf="day.goalCount > 0">
-            <span *ngFor="let i of arr(day.goalCount); let idx = index"
-                  class="dot"
-                  [class.done]="idx < day.completedCount"
-                  [class.carried]="idx >= day.completedCount"></span>
+          <div class="day-num"
+               *ngIf="!day.isToday">{{ day.date.getDate() }}
           </div>
+
+          <ng-container *ngIf="day.goalCount > 0">
+            <div class="day-bar">
+              <div class="day-bar-fill"
+                   [class.all-done]="day.completedCount === day.goalCount"
+                   [style.width.%]="(day.completedCount / day.goalCount) * 100"></div>
+            </div>
+            <div class="day-count" [class.has-goals]="day.goalCount > 0">
+              {{ day.completedCount }}/{{ day.goalCount }}
+            </div>
+          </ng-container>
         </div>
       </div>
+
     </div>
 
+    <!-- MODAL BOTTOM SHEET -->
     <div class="overlay" *ngIf="selectedDay" (click)="onOverlayClick($event)">
       <div class="modal" (click)="$event.stopPropagation()">
+
+        <div class="modal-handle"></div>
 
         <div class="modal-head">
           <span class="modal-date">{{ formatDate(selectedDay.date) }}</span>
           <button class="btn-x" (click)="closeModal()">✕</button>
         </div>
 
-        <div *ngIf="loadingModal" class="loading">Cargando metas... 🌸</div>
+        <div *ngIf="loadingModal" class="loading">Cargando... 🌸</div>
 
         <ng-container *ngIf="!loadingModal">
 
+          <!-- RESUMEN -->
+          <div class="summary" *ngIf="modalGoals.length > 0">
+            <div class="sum-chip total">
+              <span class="sum-num">{{ modalGoals.length }}</span>
+              <span class="sum-label">Total</span>
+            </div>
+            <div class="sum-chip done">
+              <span class="sum-num">{{ completedGoals }}</span>
+              <span class="sum-label">Hechas</span>
+            </div>
+            <div class="sum-chip pending">
+              <span class="sum-num">{{ modalGoals.length - completedGoals }}</span>
+              <span class="sum-label">Pendientes</span>
+            </div>
+          </div>
+
+          <!-- GOALS -->
           <div *ngFor="let g of modalGoals; trackBy: trackGoal"
                class="goal-card"
-               [class.done-card]="g.completed"
-               [class.carried-card]="g.carriedOver && !g.completed"
-               [class.normal]="!g.completed && !g.carriedOver">
+               [class.done-card]="g.completed">
 
-            <div class="gc-top">
-              <div class="gc-name">
-                <input *ngIf="editingId === g.id" class="gc-name-input"
+            <div class="gc-header">
+              <div style="flex:1; margin-right:8px">
+                <input *ngIf="editingId === g.id" class="gc-label-input"
                        type="text" [(ngModel)]="editLabel"/>
-                <span *ngIf="editingId !== g.id">{{ g.label }}</span>
+                <span class="gc-label"
+                      *ngIf="editingId !== g.id">{{ g.label }}</span>
               </div>
-              <div class="badges">
-                <span class="badge b-carried"
-                      *ngIf="g.carriedOver && !g.completed">↑ arrastrado</span>
-                <span class="badge b-done"
-                      *ngIf="g.completed">✓ completado</span>
-              </div>
+              <span class="badge-done" *ngIf="g.completed">✓ hecho</span>
+              <span class="badge-pend" *ngIf="!g.completed">pendiente</span>
             </div>
 
-            <div class="gc-row">
+            <div class="gc-progress">
+              <div class="gc-bar">
+                <div class="gc-fill"
+                     [class.done]="g.completed"
+                     [style.width.%]="pct(g)"></div>
+              </div>
+              <span class="gc-pct">{{ g.currentValue }}
+                / {{ editingId === g.id ? editTarget : g.targetValue }}
+                ({{ pct(g) }}%)</span>
+            </div>
+
+            <div class="gc-controls">
               <input class="gc-input"
                      type="number"
                      [(ngModel)]="g.currentValue"
                      min="0"/>
-              <span *ngIf="editingId !== g.id"
-                    class="gc-max">/ {{ g.targetValue }}</span>
-              <input *ngIf="editingId === g.id" class="gc-target"
-                     type="number" [(ngModel)]="editTarget" min="1"/>
-              <button class="btn-save" (click)="saveGoal(g)">Guardar</button>
-              <button class="btn-edit" (click)="toggleEdit(g)">
+              <span class="gc-sep">de</span>
+              <input *ngIf="editingId === g.id"
+                     class="gc-target-input"
+                     type="number"
+                     [(ngModel)]="editTarget"
+                     min="1"/>
+              <span class="gc-target-val"
+                    *ngIf="editingId !== g.id">{{ g.targetValue }}</span>
+            </div>
+
+            <div class="gc-actions">
+              <button class="btn-sm btn-save-sm" (click)="saveGoal(g)">Guardar
+              </button>
+              <button class="btn-sm btn-edit-sm"
+                      style="border:1.5px solid #bfdbfe"
+                      (click)="toggleEdit(g)">
                 {{ editingId === g.id ? 'Cancelar' : 'Editar' }}
               </button>
-              <button *ngIf="!g.carriedOver"
-                      class="btn-carry-on" (click)="toggleCarried(g)"
-                      title="Marcar como arrastrado al día siguiente">↑
-                Arrastrar
+              <button class="btn-sm btn-del-sm"
+                      style="border:1.5px solid #fecdd3"
+                      (click)="deleteGoal(g)">Eliminar
               </button>
-              <button *ngIf="g.carriedOver && !g.completed"
-                      class="btn-carry-off" (click)="toggleCarried(g)"
-                      title="Quitar arrastrado">✕ No arrastrar
-              </button>
-              <button class="btn-del" (click)="deleteGoal(g)">Eliminar</button>
             </div>
 
-            <div class="gc-bar">
-              <div class="gc-fill"
-                   [class.done]="g.completed"
-                   [class.carried]="g.carriedOver && !g.completed"
-                   [style.width.%]="pct(g)"></div>
-            </div>
-
-            <div class="carried-info" *ngIf="g.carriedOver && !g.completed">
-              ↑ Meta arrastrada — quedan {{ g.targetValue - g.currentValue }}por
-              completar
-            </div>
           </div>
 
           <p class="empty" *ngIf="modalGoals.length === 0">Sin metas — ¡añade
             una!</p>
 
           <hr class="sep"/>
-          <div class="add-label">+ Nueva meta</div>
+
+          <div class="add-title">Nueva meta</div>
           <input class="field" type="text" [(ngModel)]="newLabel"
                  placeholder="Nombre (ej: Pasos, Agua...)" maxlength="50"/>
           <input class="field" type="number" [(ngModel)]="newTarget"
                  placeholder="Objetivo (ej: 10000)" min="1"/>
-          <button class="btn-add" (click)="addGoal()">Añadir meta</button>
-          <button class="btn-close" (click)="closeModal()">Cerrar</button>
-        </ng-container>
+          <button class="btn-add" (click)="addGoal()">+ Añadir meta</button>
+          <button class="btn-cancel" (click)="closeModal()">Cerrar</button>
 
+        </ng-container>
       </div>
     </div>
   `
@@ -700,6 +781,10 @@ export class CalendarComponent implements OnInit {
   editingId: string | null = null;
   editLabel = '';
   editTarget = 0;
+
+  get completedGoals() {
+    return this.modalGoals.filter(g => g.completed).length;
+  }
 
   monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -764,10 +849,8 @@ export class CalendarComponent implements OnInit {
   }
 
   toggleEdit(g: Goal) {
-    if (this.editingId === g.id) {
-      this.editingId = null;
-    } else {
-      this.editingId = g.id;
+    this.editingId = this.editingId === g.id ? null : g.id;
+    if (this.editingId) {
       this.editLabel = g.label;
       this.editTarget = g.targetValue;
     }
@@ -785,7 +868,7 @@ export class CalendarComponent implements OnInit {
         this.modalGoals = [...this.modalGoals, g];
         this.newLabel = '';
         this.newTarget = null;
-        this.updateDayDots();
+        this.syncDots();
         this.cdr.detectChanges();
       }
     });
@@ -795,26 +878,12 @@ export class CalendarComponent implements OnInit {
     const isEditing = this.editingId === g.id;
     this.goalService.updateGoal(g.id, {
       currentValue: g.currentValue,
-      label: isEditing ? this.editLabel : undefined,
-      targetValue: isEditing ? this.editTarget : undefined
+      ...(isEditing && { label: this.editLabel, targetValue: this.editTarget })
     }).subscribe({
       next: updated => {
-        this.modalGoals = this.modalGoals.map(x => x.id === g.id ? updated : x);
+        this.modalGoals = this.modalGoals.map(x => x.id === g.id ? { ...updated } : x);
         this.editingId = null;
-        this.updateDayDots();
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  toggleCarried(g: Goal) {
-    this.goalService.updateGoal(g.id, {
-      currentValue: g.currentValue,
-      carriedOver: !g.carriedOver
-    }).subscribe({
-      next: updated => {
-        this.modalGoals = this.modalGoals.map(x => x.id === g.id ? updated : x);
-        this.updateDayDots();
+        this.syncDots();
         this.cdr.detectChanges();
       }
     });
@@ -824,10 +893,18 @@ export class CalendarComponent implements OnInit {
     this.goalService.deleteGoal(g.id).subscribe({
       next: () => {
         this.modalGoals = this.modalGoals.filter(x => x.id !== g.id);
-        this.updateDayDots();
+        this.syncDots();
         this.cdr.detectChanges();
       }
     });
+  }
+
+  syncDots() {
+    const day = this.calendarDays.find(d => d.dateStr === this.selectedDay?.dateStr);
+    if (day) {
+      day.goalCount = this.modalGoals.length;
+      day.completedCount = this.modalGoals.filter(g => g.completed).length;
+    }
   }
 
   closeModal() {
@@ -837,18 +914,7 @@ export class CalendarComponent implements OnInit {
   }
 
   onOverlayClick(e: MouseEvent) {
-    if ((e.target as HTMLElement).classList.contains('overlay')) {
-      this.closeModal();
-    }
-  }
-
-  updateDayDots() {
-    if (!this.selectedDay) return;
-    const day = this.calendarDays.find(d => d.dateStr === this.selectedDay!.dateStr);
-    if (day) {
-      day.goalCount = this.modalGoals.length;
-      day.completedCount = this.modalGoals.filter(g => g.completed).length;
-    }
+    if ((e.target as HTMLElement).classList.contains('overlay')) this.closeModal();
   }
 
   prevMonth() {
@@ -869,12 +935,8 @@ export class CalendarComponent implements OnInit {
     this.buildCalendar();
   }
 
-  trackGoal(index: number, g: Goal) {
+  trackGoal(_: number, g: Goal) {
     return g.id;
-  }
-
-  arr(n: number) {
-    return Array(Math.min(n, 5));
   }
 
   pct(g: Goal) {

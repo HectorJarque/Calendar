@@ -20,8 +20,7 @@ data class CreateGoalRequest(
 data class UpdateGoalRequest(
     @field:Min(0) val currentValue: Int,
     @field:Size(max = 50) val label: String? = null,
-    @field:Min(1) val targetValue: Int? = null,
-    val carriedOver: Boolean? = null
+    @field:Min(1) val targetValue: Int? = null
 )
 
 @RestController
@@ -45,10 +44,6 @@ class GoalController(private val goalService: GoalService) {
         @Valid @RequestBody req: UpdateGoalRequest,
         principal: Principal
     ) = goalService.updateGoal(id, principal.name, req)
-
-    @PatchMapping("/{id}/carry")
-    fun carryOver(@PathVariable id: String, principal: Principal) =
-        goalService.manualCarryOver(id, principal.name)
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

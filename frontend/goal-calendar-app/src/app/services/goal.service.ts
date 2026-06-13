@@ -9,7 +9,6 @@ export interface Goal {
   currentValue: number;
   date: string;
   completed: boolean;
-  carriedOver: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,17 +23,8 @@ export class GoalService {
     return this.http.post<Goal>(`${environment.apiUrl}/goals`, goal);
   }
 
-  updateGoal(id: string, data: {
-    currentValue: number;
-    label?: string;
-    targetValue?: number;
-    carriedOver?: boolean;
-  }) {
+  updateGoal(id: string, data: { currentValue: number; label?: string; targetValue?: number }) {
     return this.http.put<Goal>(`${environment.apiUrl}/goals/${id}`, data);
-  }
-
-  carryOver(id: string) {
-    return this.http.patch<Goal>(`${environment.apiUrl}/goals/${id}/carry`, {});
   }
 
   deleteGoal(id: string) {
