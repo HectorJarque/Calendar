@@ -22,21 +22,15 @@ class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter()
     ) {
         val header = req.getHeader("Authorization")
 
-        if (header == null || ! header.startsWith("Bearer ")) {
-            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token requerido")
-            return
+        if (header != null && header.startsWith("Bearer ")) {
+            val token = header.removePrefix("Bearer ")
+            if (jwtService.isValid(token)) {
+                val userId = jwtService.extractUserId(token)
+                val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
+                SecurityContextHolder.getContext().authentication = auth
+            }
         }
 
-        val token = header.removePrefix("Bearer ")
-
-        if (! jwtService.isValid(token)) {
-            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido")
-            return
-        }
-
-        val userId = jwtService.extractUserId(token)
-        val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
-        SecurityContextHolder.getContext().authentication = auth
         chain.doFilter(req, res)
     }
 }
